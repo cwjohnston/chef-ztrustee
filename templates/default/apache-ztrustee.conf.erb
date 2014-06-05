@@ -1,0 +1,64 @@
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+LoadModule ssl_module modules/mod_ssl.so
+LoadModule wsgi_module modules/mod_wsgi.so
+LoadModule ssl_module modules/mod_ssl.so
+
+WSGISocketPrefix /var/run/wsgi
+
+
+Listen 0.0.0.0:443
+
+SSLPassPhraseDialog  builtin
+SSLSessionCache         shmcb:/var/cache/mod_ssl/scache(512000)
+SSLSessionCacheTimeout  300
+SSLMutex default
+# For FIPS, ensure that OpenSSL is seeded at Apache start,
+# and reseeded at each connection
+# SSLRandomSeed startup file:/dev/urandom  1024
+# SSLRandomSeed connect builtin
+# SSLCryptoDevice builtin
+
+<VirtualHost *:443>
+	# Use separate log files for the SSL virtual host; note that LogLevel
+	# is not inherited from httpd.conf.
+	TransferLog logs/ssl_access_log
+	SSLEngine on
+
+	#   SSL Protocol support:
+	# List the enable protocol levels with which clients will be able to
+	# connect.  Use TLSv1 for FIPS140-2 compliance
+	SSLProtocol +TLSv1 +SSLv3
+	SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RSA:+HIGH:!MEDIUM:!LOW
+	SSLCertificateFile	<%= node[:ztrustee][:ssl][:cert] %>
+	SSLCertificateKeyFile <%= node[:ztrustee][:ssl][:key] %>
+	SSLCertificateChainFile <%= node[:ztrustee][:ssl][:ca] %>
+
+	ServerName server-centos-64.vagrantup.com
+	ServerAlias ztrustee
+	ServerAdmin webmaster@server-centos-64.vagrantup.com
+
+	WSGIDaemonProcess ztrustee display-name=%{GROUP} user=ztrustee
+	WSGIProcessGroup ztrustee
+
+	WSGIScriptAlias / /usr/share/ztrustee-server/www/index.wsgi
+
+	<Directory /usr/share/ztrustee-server/www>
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+	Alias /api/ /usr/share/doc/ztrustee-docs/html/
+	<Directory /usr/share/doc/ztrustee-docs/html/>
+		AuthUserFile /var/lib/ztrustee/.htpasswd-api
+		AuthName "Authorization Required"
+		AuthType Basic
+		require valid-user
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+	ErrorLog /var/log/ztrustee/webapp.log
+	LogLevel warn
+	CustomLog /var/log/ztrustee/access.log combined
+</VirtualHost>

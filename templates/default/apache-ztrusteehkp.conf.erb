@@ -1,0 +1,19 @@
+LoadModule wsgi_module modules/mod_wsgi.so
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+
+WSGISocketPrefix /var/run/wsgi
+
+<VirtualHost *:80>
+	ServerName server-centos-64.vagrantup.com
+	ServerAlias hkp
+	ServerAdmin webmaster@server-centos-64.vagrantup.com
+
+	WSGIDaemonProcess hkp display-name=%{GROUP} user=ztrustee
+	WSGIProcessGroup ztrustee
+
+	WSGIScriptAlias / /usr/share/ztrustee-server/www/hkp.wsgi
+
+	LogLevel info
+	ErrorLog /var/log/ztrustee/hkp.log
+</VirtualHost>

@@ -1,0 +1,17 @@
+PKG="ztrustee"
+ZTRUSTEE_SERVER="<%= node[:ztrustee][:server_url] %>"
+ZTRUSTEE_USER="$USER@$(hostname -f)"
+ZTRUSTEE_GPG_OPTS="--no-default-keyring --keyring $PKG"
+
+ZTRUSTEE_SERVER_USER="<%= node[:ztrustee][:server_user] %>"
+ZTRUSTEE_SERVER_GROUP="<%= node[:ztrustee][:server_group] %>"
+ZTRUSTEE_SERVER_HOME="<%= node[:ztrustee][:home_dir] %>"
+ZTRUSTEE_SERVER_CONFDIR="<%= node[:ztrustee][:home_dir] %>/.$PKG"
+ZTRUSTEE_SERVER_CONF="$ZTRUSTEE_SERVER_CONFDIR/$PKG.conf"
+ZTRUSTEE_SERVER_LOGDIR="<%= node[:ztrustee][:log_dir] %>"
+ZTRUSTEE_SERVER_LOG="<%= node[:ztrustee][:log_dir] %>/$PKG.log"
+
+ZTRUSTEE_SERVER_CERT="<%= node[:ztrustee][:ssl][:cert] %>"
+ZTRUSTEE_SERVER_PUB_CERT="<%= node[:ztrustee][:ssl][:pub_cert] %>"
+ZTRUSTEE_SERVER_PK="<%= node[:ztrustee][:ssl][:key] %>"
+ZTRUSTEE_SERVER_CA="<%= node[:ztrustee][:ssl][:ca] %>"
