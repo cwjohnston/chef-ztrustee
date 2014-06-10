@@ -1,11 +1,11 @@
 gpg_bin = '/usr/bin/gpg'
 conftool = '/usr/lib/ztrustee-server/conftool'
 
-execute 'generate and upload ztrustee-server key pair' do
-  command <<-EOH
+bash 'generate and upload ztrustee-server key pair' do
+  code <<-EOH
 qualified_fp=$(/usr/lib/ztrustee/genkey #{node[:ztrustee][:server_conf_dir]} #{node[:ztrustee][:server_email]} server)
-fingerprint=$(echo "$qualified_fp" | sed 's/.*\///')
-#{gpg_bin} --batch --yes --homedir #{node[:ztrustee][:server_conf_dir]} -vvv --keyserver hkp://localhost:80 --send-keys
+fingerprint=$(echo "$qualified_fp" | sed 's/.*\\///')
+#{gpg_bin} --batch --yes --homedir #{node[:ztrustee][:server_conf_dir]} -vvv --keyserver hkp://localhost:80 --send-keys 0x$fingerprint
 #{conftool} -f #{node[:ztrustee][:server_conf_dir]}/ztrustee.conf put LOCAL_FINGERPRINT "$qualified_fp"
 EOH
   user node[:ztrustee][:server_user]
