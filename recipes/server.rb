@@ -30,12 +30,19 @@ user node[:ztrustee][:server_user] do
   home node[:ztrustee][:home_dir]
 end
 
-%w( log conf server_conf home ).each do |target|
+%w( log conf home ).each do |target|
   directory node[:ztrustee]["#{target}_dir"] do
     recursive true
     owner node[:ztrustee][:server_user]
     group node[:ztrustee][:server_group]
   end
+end
+
+directory node[:ztrustee][:server_conf_dir] do
+  mode 0700
+  recursive true
+  owner node[:ztrustee][:server_user]
+  group node[:ztrustee][:server_group]
 end
 
 # the default config file is an empty pyton dict
@@ -67,9 +74,7 @@ service 'haveged' do
   action [:enable, :start]
 end
 
-package "ztrustee-server" do
-  action :install
-end
+package "ztrustee-server"
 
 include_recipe 'ztrustee::_server_ssl'
 include_recipe 'ztrustee::_server_apache'
