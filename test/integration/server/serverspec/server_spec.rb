@@ -59,3 +59,9 @@ describe orgtool_output do
   it { should match(/test_org/) }
   it { should match(/changeme/) }
 end
+
+ztrustee_output = command("ztrustee status").stdout
+
+describe ztrustee_output do
+  it { should match(/LOCAL_FINGERPRINT/) }
+end
