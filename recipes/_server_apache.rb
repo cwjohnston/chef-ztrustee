@@ -25,6 +25,6 @@ end
   # force apache to restart immediately when apache_site resources are updated
   # so that the hkp server is available by the time we try to upload our keys
   r = resources("execute[a2ensite #{zsite}]")
-  r.notifies(:restart, 'service[apache2]', :immediately)
+  r.notifies(:reload, 'service[apache2]', :immediately)
 
 end
