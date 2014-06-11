@@ -3,6 +3,7 @@ require 'json'
 
 # ztrustee_org 'HW_TEST' do
 #   contacts ['ian@hw-ops.com', 'cameron@hw-ops.com']
+#   authcode 'secret'
 # end
 
 action :add do
@@ -10,12 +11,29 @@ action :add do
     Chef::Log.info("ztrustee_org #{org['name']} exists, nothing to do")
     Chef::Log.debug("ztrustee_org #{org['name']}: #{org.inspect}")
   else
-    Chef::Log.info("ztrustee_org #{new_resource.name} does not exist, adding it now")
-    add_org_command = Mixlib::ShellOut.new("#{new_resource.orgtool_path} add -n #{new_resource.name} -c #{new_resource.contacts.join(',')}")
-    add_org_command.run_command
-    Chef::Log.info("ztrustee_org #{new_resource.name} added!")
-    org = get_org(new_resource.name)
-    Chef::Log.debug("ztrustee_org #{org['name']}: #{org.inspect}")
+    converge_by("ztrustee_org #{new_resource.name} does not exist, adding it now") do
+      add_org_command = Mixlib::ShellOut.new("#{new_resource.orgtool_path} add -n #{new_resource.name} -c #{new_resource.contacts.join(',')}")
+      add_org_command.run_command
+      Chef::Log.info("ztrustee_org #{new_resource.name} added!")
+    end
+    new_resource.updated_by_last_action(true)
+  end
+end
+
+action :set_authcode do
+  if org = get_org(new_resource.name)
+    Chef::Log.debug("ztrustee_org #{org['name']} current authcode: #{org['auth_secret']}, requested authcode #{new_resource.authcode}")
+    if org['auth_secret'] == new_resource.authcode
+      Chef::Log.info("ztrustee_org #{org['name']} auth code already up to date, nothing to do.")
+    else
+      converge_by("ztrustee_org #{org['name']} updating authcode") do
+        set_auth_command = Mixlib::ShellOut.new("#{new_resource.orgtool_path} set-auth -n #{new_resource.name} -s #{new_resource.authcode}")
+        set_auth_command.run_command
+      end
+      new_resource.updated_by_last_action(true)
+    end
+  else
+    Chef::Application.fatal!("ztrustee_org #{org['name']} does not exist, can't set its auth code")
   end
 end
 

@@ -57,4 +57,5 @@ orgtool_output = command("#{orgtool_path} list").stdout
 
 describe orgtool_output do
   it { should match(/test_org/) }
+  it { should match(/changeme/) }
 end
