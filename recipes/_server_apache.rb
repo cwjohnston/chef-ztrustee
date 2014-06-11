@@ -1,6 +1,6 @@
 node.set[:apache][:default_site_enabled] = false
 
-%w{ default mod_ssl mod_rewrite mod_wsgi mod_proxy_http }.each do |r|
+%w{ default mod_ssl mod_rewrite mod_wsgi mod_proxy mod_proxy_http }.each do |r|
   include_recipe "apache2::#{r}"
 end
 
