@@ -29,7 +29,7 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
   supports os
 end
 
-depends 'yum-epel'
-depends 'postgresql'
-depends 'database'
-depends 'apache2'
+depends 'yum-epel', '~> 0.4'
+depends 'postgresql', '~> 3.4'
+depends 'database', '~> 2.3'
+depends 'apache2', '~> 1.11'
