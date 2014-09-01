@@ -17,7 +17,7 @@
 #
 
 name 'ztrustee'
-version '1.0.1'
+version '1.0.2'
 
 maintainer 'Heavy Water Operations, LLC'
 maintainer_email 'support@hw-ops.com'
